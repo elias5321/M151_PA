@@ -1,0 +1,375 @@
+/* ============================================================
+   PHP Arrays – Erklärungsprojekt Stylesheet
+   ============================================================ */
+
+:root {
+    --bg:         #0f1117;
+    --bg2:        #181c27;
+    --bg3:        #1f2436;
+    --border:     #2a3050;
+    --accent:     #7c6af7;
+    --accent2:    #38bdf8;
+    --text:       #e2e8f0;
+    --text-muted: #6b7a9e;
+    --code-bg:    #111827;
+    --code-border:#1e2a45;
+    --green:      #22c55e;
+    --radius:     12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+    background: linear-gradient(135deg, #12153a 0%, #1a1040 50%, #0f1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(124,106,247,.25) 0%, transparent 65%);
+    pointer-events: none;
+}
+
+.badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    padding: .3rem .8rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+}
+
+header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    margin-top: .5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    letter-spacing: .05em;
+}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+/* ── CARD ────────────────────────────────────────────────── */
+.card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.card-label {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    user-select: none;
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: .75rem;
+}
+
+.beschreibung {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+}
+
+.beschreibung code, p code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    font-size: .85em;
+    color: var(--accent2);
+}
+
+/* ── CODE BLOCK ──────────────────────────────────────────── */
+.code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.code-title {
+    padding: .5rem 1rem;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--code-border);
+    letter-spacing: .06em;
+}
+
+pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    line-height: 1.8;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    color: #c9d1d9;
+}
+
+/* Syntax highlighting */
+.var   { color: #79c0ff; }
+.str   { color: #a5d6ff; }
+.kw    { color: #ff7b72; }
+.op    { color: #d2a8ff; }
+.num   { color: #f2cc60; }
+.comment { color: #485a7a; font-style: italic; }
+
+/* ── RESULT BLOCK ────────────────────────────────────────── */
+.result-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.result-title {
+    padding: .5rem 1rem;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--green);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: .06em;
+}
+
+/* ── INDEX GRID ──────────────────────────────────────────── */
+.index-grid {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    padding: 1.25rem 1.25rem .75rem;
+}
+
+.index-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .3rem;
+}
+
+.index-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    color: var(--accent);
+    background: rgba(124,106,247,.12);
+    border: 1px solid rgba(124,106,247,.3);
+    border-radius: 4px;
+    padding: .1rem .4rem;
+}
+
+.index-wert {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ── ZUGRIFF DEMO ────────────────────────────────────────── */
+.zugriff-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: .75rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--border);
+    margin-top: .5rem;
+}
+
+.zugriff-demo span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    color: var(--text-muted);
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: .3rem .75rem;
+}
+
+.zugriff-demo strong { color: var(--accent2); }
+.zugriff-demo em     { color: var(--green); font-style: normal; }
+
+/* ── ASSOC GRID ──────────────────────────────────────────── */
+.assoc-grid {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.assoc-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+}
+
+.assoc-key {
+    color: var(--accent2);
+    min-width: 180px;
+}
+
+.arrow {
+    color: var(--text-muted);
+}
+
+.assoc-val {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ── DATA TABLE ──────────────────────────────────────────── */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+
+.data-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: .06em;
+    padding: .6rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+    background: rgba(255,255,255,.02);
+}
+
+.data-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    color: var(--accent);
+}
+
+/* ── NOTE BADGE ──────────────────────────────────────────── */
+.note-badge {
+    display: inline-block;
+    color: #fff;
+    font-weight: 800;
+    font-size: .82rem;
+    border-radius: 6px;
+    padding: .2rem .65rem;
+}
+
+/* ── FOREACH LIST ────────────────────────────────────────── */
+.foreach-list {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.foreach-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem .75rem;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    font-size: .9rem;
+    color: var(--text);
+}
+
+/* ── SUB SECTION ─────────────────────────────────────────── */
+.sub-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.sub-section h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: .85rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .card { padding: 1.5rem 1.25rem; }
+    .card-label { font-size: 1.8rem; top: 1rem; right: 1rem; }
+    .assoc-key { min-width: 130px; font-size: .78rem; }
+    pre { font-size: .78rem; }
+}
