@@ -83,5 +83,7 @@ $safeEmail = isset($rawEmail) ? safe($rawEmail) : '';
     <button type="submit">Anmelden</button>
 </form>
 
+<p><a href="register.php">Noch kein Konto? Hier registrieren</a></p>
+
 </body>
 </html>
