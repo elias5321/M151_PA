@@ -1,4 +1,5 @@
 <?php
+require_once 'db.php';
 
 $errors         = [];
 $successMessage = '';
@@ -7,21 +8,28 @@ $successMessage = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // C6: Sind alle Felder vorhanden?
-    if (!isset($_POST['email'], $_POST['password'], $_POST['password_confirm'])) {
+    if (!isset($_POST['username'], $_POST['email'], $_POST['password'], $_POST['password_confirm'])) {
         $errors[] = 'Ungültige Anfrage: Pflichtfelder fehlen.';
     } else {
 
         // C7: trim() vor jeder Validierung
+        $rawUsername        = trim($_POST['username']);
         $rawEmail           = trim($_POST['email']);
         $rawPassword        = trim($_POST['password']);
         $rawPasswordConfirm = trim($_POST['password_confirm']);
 
         // C6: empty() – Felder nicht leer?
+        if (empty($rawUsername))        { $errors[] = 'Benutzername darf nicht leer sein.'; }
         if (empty($rawEmail))           { $errors[] = 'E-Mail-Adresse darf nicht leer sein.'; }
         if (empty($rawPassword))        { $errors[] = 'Passwort darf nicht leer sein.'; }
         if (empty($rawPasswordConfirm)) { $errors[] = 'Passwort-Bestätigung darf nicht leer sein.'; }
 
         if (empty($errors)) {
+
+            // C6: strlen() – Maximallänge Benutzername
+            if (strlen($rawUsername) > 50) {
+                $errors[] = 'Benutzername darf maximal 50 Zeichen lang sein.';
+            }
 
             // C6: strlen() – Maximallänge E-Mail
             if (strlen($rawEmail) > 100) {
@@ -50,8 +58,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // Prüfen ob E-Mail bereits existiert
         if (empty($errors)) {
-            $successMessage = 'Registrierung erfolgreich!';
+            $stmt = mysqli_prepare($conn, 'SELECT id FROM users WHERE email = ?');
+            mysqli_stmt_bind_param($stmt, 's', $rawEmail);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                $errors[] = 'Diese E-Mail-Adresse ist bereits registriert.';
+            }
+            mysqli_stmt_close($stmt);
+        }
+
+        // Prüfen ob Benutzername bereits existiert
+        if (empty($errors)) {
+            $stmt = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ?');
+            mysqli_stmt_bind_param($stmt, 's', $rawUsername);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                $errors[] = 'Dieser Benutzername ist bereits vergeben.';
+            }
+            mysqli_stmt_close($stmt);
+        }
+
+        // Benutzer in DB einfügen
+        if (empty($errors)) {
+            $passwordHash = password_hash($rawPassword, PASSWORD_BCRYPT);
+            $role         = 'user';
+
+            $stmt = mysqli_prepare($conn, 'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)');
+            mysqli_stmt_bind_param($stmt, 'ssss', $rawUsername, $rawEmail, $passwordHash, $role);
+
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                header('Location: login.php');
+                exit;
+            } else {
+                $errors[] = 'Registrierung fehlgeschlagen. Bitte versuche es erneut.';
+                mysqli_stmt_close($stmt);
+            }
         }
     }
 }
@@ -61,8 +107,9 @@ function safe(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-// C7: E-Mail sicher für Wiederanzeige vorbereiten – niemals $_POST direkt ausgeben
-$safeEmail = isset($rawEmail) ? safe($rawEmail) : '';
+// C7: Werte sicher für Wiederanzeige vorbereiten – niemals $_POST direkt ausgeben
+$safeUsername = isset($rawUsername) ? safe($rawUsername) : '';
+$safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -83,36 +130,16 @@ $safeEmail = isset($rawEmail) ? safe($rawEmail) : '';
     </ul>
 <?php endif; ?>
 
-<?php if ($successMessage !== ''): ?>
-    <p><?= safe($successMessage) ?></p>
-<?php endif; ?>
-
 <form method="post" action="register.php">
 
-    <label for="first_name">Vorname</label><br>
-    <!--
-        C5: type="email" + required + maxlength – clientseitige Validierung
-        C7: value wird durch safe() geschützt ausgegeben
-    -->
+    <label for="username">Benutzername</label><br>
     <input
         type="text"
-        id="first_name"
-        name="first_name"
+        id="username"
+        name="username"
         required
-        maxlength="100"
-    ><br><br>
-
-    <label for="last_name">Nachname</label><br>
-    <!--
-        C5: type="email" + required + maxlength – clientseitige Validierung
-        C7: value wird durch safe() geschützt ausgegeben
-    -->
-    <input
-        type="text"
-        id="last_name"
-        name="last_name"
-        required
-        maxlength="100"
+        maxlength="50"
+        value="<?= $safeUsername ?>"
     ><br><br>
 
     <label for="email">E-Mail-Adresse</label><br>
