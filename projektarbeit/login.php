@@ -1,7 +1,10 @@
 <?php
+session_start();
 
-$errors         = [];
-$successMessage = '';
+require_once 'db.php';
+/** @var \mysqli $conn */
+
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -24,17 +27,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!filter_var($rawEmail, FILTER_VALIDATE_EMAIL)) {
                 $errors[] = 'E-Mail-Adresse ist nicht gültig.';
             }
-
-            if (strlen($rawPassword) < 8) {
-                $errors[] = 'Passwort muss mindestens 8 Zeichen lang sein.';
-            }
-
-            $pattern = '/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$/';
-            if (!preg_match($pattern, $rawPassword)) {
-                $errors[] = 'Passwort muss Gross-/Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.';
-            }
         }
 
+        if (empty($errors)) {
+            $stmt = mysqli_prepare($conn, 'SELECT id, username, password_hash, role FROM users WHERE email = ?');
+            mysqli_stmt_bind_param($stmt, 's', $rawEmail);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt, $userId, $username, $passwordHash, $role);
+            mysqli_stmt_fetch($stmt);
+            mysqli_stmt_close($stmt);
+
+            if ($userId && password_verify($rawPassword, $passwordHash)) {
+                session_regenerate_id(true);
+                $_SESSION['user_id']  = $userId;
+                $_SESSION['username'] = $username;
+                $_SESSION['role']     = $role;
+                header('Location: index.php');
+                exit;
+            } else {
+                $errors[] = 'E-Mail-Adresse oder Passwort ist falsch.';
+            }
+        }
     }
 }
 
