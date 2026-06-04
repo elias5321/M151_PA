@@ -8,30 +8,19 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if (!isset($_POST['email'], $_POST['password'])) {
+    if (!isset($_POST['login'], $_POST['password'])) {
         $errors[] = 'Ungültige Anfrage: Pflichtfelder fehlen.';
     } else {
 
-        $rawEmail    = trim($_POST['email']);
+        $rawLogin    = trim($_POST['login']);
         $rawPassword = trim($_POST['password']);
 
-        if (empty($rawEmail))    { $errors[] = 'E-Mail-Adresse darf nicht leer sein.'; }
+        if (empty($rawLogin))    { $errors[] = 'Benutzername oder E-Mail darf nicht leer sein.'; }
         if (empty($rawPassword)) { $errors[] = 'Passwort darf nicht leer sein.'; }
 
         if (empty($errors)) {
-
-            if (strlen($rawEmail) > 100) {
-                $errors[] = 'E-Mail-Adresse darf maximal 100 Zeichen lang sein.';
-            }
-
-            if (!filter_var($rawEmail, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = 'E-Mail-Adresse ist nicht gültig.';
-            }
-        }
-
-        if (empty($errors)) {
-            $stmt = mysqli_prepare($conn, 'SELECT id, username, password_hash, role FROM users WHERE email = ?');
-            mysqli_stmt_bind_param($stmt, 's', $rawEmail);
+            $stmt = mysqli_prepare($conn, 'SELECT id, username, password_hash, role FROM users WHERE email = ? OR username = ?');
+            mysqli_stmt_bind_param($stmt, 'ss', $rawLogin, $rawLogin);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_bind_result($stmt, $userId, $username, $passwordHash, $role);
             mysqli_stmt_fetch($stmt);
@@ -45,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header('Location: index.php');
                 exit;
             } else {
-                $errors[] = 'E-Mail-Adresse oder Passwort ist falsch.';
+                $errors[] = 'Benutzername/E-Mail oder Passwort ist falsch.';
             }
         }
     }
@@ -55,48 +44,56 @@ function safe(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$safeEmail = isset($rawEmail) ? safe($rawEmail) : '';
+$safeLogin = isset($rawLogin) ? safe($rawLogin) : '';
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Login</h1>
+<div class="card">
+    <h1>Login</h1>
 
+    <?php if (!empty($errors)): ?>
+        <div class="errors">
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?= safe($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
-<form method="post" action="login.php">
+    <form method="post" action="login.php">
 
-    <label for="email">E-Mail-Adresse</label><br>
-    
-    <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        maxlength="100"
-        value="<?= $safeEmail ?>"
-    ><br><br>
+        <label for="login">Benutzername oder E-Mail</label>
+        <input
+            type="text"
+            id="login"
+            name="login"
+            required
+            maxlength="100"
+            value="<?= $safeLogin ?>"
+        >
 
-    <label for="password">Passwort</label><br>
-    
-    <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        minlength="8"
-        pattern="^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$"
-        title="Mindestens 8 Zeichen, Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen"
-    ><br><br>
+        <label for="password">Passwort</label>
+        <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="8"
+        >
 
-    <button type="submit">Anmelden</button>
-</form>
+        <button type="submit">Anmelden</button>
+    </form>
 
-<p><a href="register.php">Noch kein Konto? Hier registrieren</a></p>
+    <p class="link"><a href="register.php">Noch kein Konto? Hier registrieren</a></p>
+</div>
 
 </body>
 </html>

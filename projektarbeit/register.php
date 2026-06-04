@@ -117,75 +117,80 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
 <head>
     <meta charset="UTF-8">
     <title>Registrierung</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Registrierung</h1>
+<div class="card">
+    <h1>Registrierung</h1>
 
-<?php if (!empty($errors)): ?>
-    <ul>
-        <?php foreach ($errors as $error): ?>
-            <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
-            <li><?= safe($error) ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+    <?php if (!empty($errors)): ?>
+        <div class="errors">
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
+                    <li><?= safe($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
-<form method="post" action="register.php">
+    <form method="post" action="register.php">
 
-    <label for="username">Benutzername</label><br>
-    <input
-        type="text"
-        id="username"
-        name="username"
-        required
-        maxlength="50"
-        value="<?= $safeUsername ?>"
-    ><br><br>
+        <label for="username">Benutzername</label>
+        <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            maxlength="50"
+            value="<?= $safeUsername ?>"
+        >
 
-    <label for="email">E-Mail-Adresse</label><br>
-    <!--
-        C5: type="email" + required + maxlength – clientseitige Validierung
-        C7: value wird durch safe() geschützt ausgegeben
-    -->
-    <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        maxlength="100"
-        value="<?= $safeEmail ?>"
-    ><br><br>
+        <label for="email">E-Mail-Adresse</label>
+        <!--
+            C5: type="email" + required + maxlength – clientseitige Validierung
+            C7: value wird durch safe() geschützt ausgegeben
+        -->
+        <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            maxlength="100"
+            value="<?= $safeEmail ?>"
+        >
 
-    <label for="password">Passwort</label><br>
-    <!--
-        C5: minlength + pattern erzwingen Komplexität bereits im Browser
-        C7: Passwort wird NICHT als value zurückgegeben
-    -->
-    <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        minlength="8"
-        pattern="^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$"
-        title="Mindestens 8 Zeichen, Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen"
-    ><br><br>
+        <label for="password">Passwort</label>
+        <!--
+            C5: minlength + pattern erzwingen Komplexität bereits im Browser
+            C7: Passwort wird NICHT als value zurückgegeben
+        -->
+        <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="8"
+            pattern="^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$"
+            title="Mindestens 8 Zeichen, Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen"
+        >
 
-    <label for="password_confirm">Passwort bestätigen</label><br>
-    <!-- C5: required – Feld darf nicht leer sein -->
-    <input
-        type="password"
-        id="password_confirm"
-        name="password_confirm"
-        required
-        minlength="8"
-    ><br><br>
+        <label for="password_confirm">Passwort bestätigen</label>
+        <!-- C5: required – Feld darf nicht leer sein -->
+        <input
+            type="password"
+            id="password_confirm"
+            name="password_confirm"
+            required
+            minlength="8"
+        >
 
-    <button type="submit">Registrieren</button>
-</form>
+        <button type="submit">Registrieren</button>
+    </form>
 
-<p><a href="login.php">Bereits registriert? Zum Login</a></p>
+    <p class="link"><a href="login.php">Bereits registriert? Zum Login</a></p>
+</div>
 
 </body>
 </html>

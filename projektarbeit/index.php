@@ -15,16 +15,19 @@ function safe(string $value): string {
 <head>
     <meta charset="UTF-8">
     <title>Startseite</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Willkommen, <?= safe($_SESSION['username']) ?>!</h1>
+<div class="card">
+    <h1>Willkommen, <?= safe($_SESSION['username']) ?>!</h1>
 
-<p>Du bist eingeloggt als <strong><?= safe($_SESSION['role']) ?></strong>.</p>
+    <p class="info">Du bist eingeloggt als <strong><?= safe($_SESSION['username']) ?></strong>.</p>
 
-<form method="post" action="logout.php">
-    <button type="submit">Abmelden</button>
-</form>
+    <form method="post" action="logout.php">
+        <button type="submit" class="btn-danger">Abmelden</button>
+    </form>
+</div>
 
 </body>
 </html>
