@@ -120,7 +120,7 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<div class="centered-wrapper">
 <div class="card">
     <h1>Registrierung</h1>
 
@@ -190,6 +190,7 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
     </form>
 
     <p class="link"><a href="login.php">Bereits registriert? Zum Login</a></p>
+</div>
 </div>
 
 </body>
