@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // Prüfen ob E-Mail bereits existiert
+        // C19: Prepared Statement – prüft ob E-Mail bereits existiert
         if (empty($errors)) {
             $stmt = mysqli_prepare($conn, 'SELECT id FROM users WHERE email = ?');
             mysqli_stmt_bind_param($stmt, 's', $rawEmail);
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_close($stmt);
         }
 
-        // Prüfen ob Benutzername bereits existiert
+        // C19: Prepared Statement – prüft ob Benutzername bereits existiert
         if (empty($errors)) {
             $stmt = mysqli_prepare($conn, 'SELECT id FROM users WHERE username = ?');
             mysqli_stmt_bind_param($stmt, 's', $rawUsername);
@@ -83,11 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_close($stmt);
         }
 
-        // Benutzer in DB einfügen
+        // C13/C16: Benutzer erfassen – C11: Passwort wird mit bcrypt gehasht und gesaltet
         if (empty($errors)) {
             $passwordHash = password_hash($rawPassword, PASSWORD_BCRYPT);
             $role         = 'user';
 
+            // C19: Prepared Statement verhindert SQL-Injection beim INSERT
             $stmt = mysqli_prepare($conn, 'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)');
             mysqli_stmt_bind_param($stmt, 'ssss', $rawUsername, $rawEmail, $passwordHash, $role);
 
@@ -135,9 +136,11 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
         </div>
     <?php endif; ?>
 
+    <!-- C13: Registrierungsformular – erfasst Benutzername, E-Mail und Passwort -->
     <form method="post" action="register.php">
 
         <label for="username">Benutzername</label>
+        <!-- C5: required + maxlength – clientseitige Validierung -->
         <input
             type="text"
             id="username"
@@ -177,7 +180,7 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
         >
 
         <label for="password_confirm">Passwort bestätigen</label>
-        <!-- C5: required – Feld darf nicht leer sein -->
+        <!-- C5: required + minlength – clientseitige Validierung -->
         <input
             type="password"
             id="password_confirm"
