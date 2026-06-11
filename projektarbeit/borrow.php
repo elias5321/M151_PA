@@ -72,42 +72,62 @@ $minDate = date('Y-m-d', strtotime('+1 day'));
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Geräte ausleihen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Geräte ausleihen – IT Ausleihesystem</title>
+    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="card-wide">
 
-    <!-- C8: Nav nur erreichbar wenn angemeldet (requireLogin) -->
-    <div class="nav-bar">
-        <a href="index.php">Dashboard</a>
-        <a href="borrow.php" class="active">Ausleihen</a>
-        <a href="my_loans.php">Meine Ausleihen</a>
+<!-- C8: Nav nur erreichbar wenn angemeldet (requireLogin) -->
+<nav class="navbar navbar-expand-lg navbar-light" role="navigation" style="min-height: 60px">
+    <a href="index.php" class="navbar-brand">
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz"/>
+        <span class="navbar-title">IT Ausleihesystem</span>
+    </a>
+    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
+    <ul class="navbar-nav ml-auto align-items-center flex-row">
+        <li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active font-weight-bold" href="borrow.php">Ausleihen</a></li>
+        <li class="nav-item"><a class="nav-link" href="my_loans.php">Meine Ausleihen</a></li>
         <?php if ($_SESSION['role'] === 'admin'): ?>
-            <a href="devices.php">Geräte verwalten</a>
+            <li class="nav-item"><a class="nav-link" href="devices.php">Geräte</a></li>
         <?php endif; ?>
-        <a href="change_password.php">Passwort</a>
-        <form method="post" action="logout.php">
-            <button class="btn-nav">Abmelden</button>
-        </form>
-    </div>
+        <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <?= safe($_SESSION['username']) ?>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="index.php">Mein Profil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="change_password.php">Passwort ändern</a>
+                <div class="dropdown-divider"></div>
+                <form method="post" action="logout.php">
+                    <button type="submit" class="dropdown-item text-danger">Abmelden</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
 
-    <h1>Geräte ausleihen</h1>
+<main class="container mt-4">
+
+    <h1 class="h3 mb-4">Geräte ausleihen</h1>
 
     <?php foreach ($messages as $m): ?>
         <!-- C7: safe() schützt vor XSS -->
-        <div class="success"><?= safe($m) ?></div>
+        <div class="alert alert-success"><?= safe($m) ?></div>
     <?php endforeach; ?>
     <?php foreach ($errors as $e): ?>
         <!-- C7: safe() schützt vor XSS -->
-        <div class="errors"><?= safe($e) ?></div>
+        <div class="alert alert-danger"><?= safe($e) ?></div>
     <?php endforeach; ?>
 
     <?php if (empty($devices)): ?>
         <p>Aktuell sind keine Geräte verfügbar.</p>
     <?php else: ?>
-    <table>
-        <thead>
+    <table class="table table-striped table-hover">
+        <thead class="thead-light">
             <tr>
                 <th>Name</th>
                 <th>Kategorie</th>
@@ -129,8 +149,8 @@ $minDate = date('Y-m-d', strtotime('+1 day'));
                     <form method="post" action="borrow.php" class="row-form">
                         <input type="hidden" name="device_id" value="<?= (int)$d['id'] ?>">
                         <!-- C5: type="date" + required + min – clientseitige Validierung -->
-                        <input type="date" name="due_date" min="<?= safe($minDate) ?>" required>
-                        <button type="submit" class="btn-sm">Ausleihen</button>
+                        <input type="date" name="due_date" min="<?= safe($minDate) ?>" required class="form-control form-control-sm" style="width:auto">
+                        <button type="submit" class="btn btn-primary btn-sm">Ausleihen</button>
                     </form>
                 </td>
             </tr>
@@ -139,6 +159,23 @@ $minDate = date('Y-m-d', strtotime('+1 day'));
     </table>
     <?php endif; ?>
 
-</div>
+</main>
+
+<footer id="footer" class="mt-5">
+    <div class="container tools__footer pt-4">
+        <div class="row">
+            <div class="d-flex justify-content-center w-100">
+                <p>
+                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
+                        www.fhnw.ch/de/die-fhnw/it-support
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

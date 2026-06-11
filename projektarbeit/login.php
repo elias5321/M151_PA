@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_close($stmt);
 
             // C11: password_verify() prüft gegen bcrypt-Hash
-            if ($userId && password_verify($rawPassword, $passwordHash)) {
+            if ($userId && $passwordHash !== null && password_verify($rawPassword, $passwordHash)) {
                 // C10: session_regenerate_id() verhindert Session-Fixation
                 session_regenerate_id(true);
                 // C8/C14: Session-Variablen setzen – Benutzer ist nun angemeldet
@@ -58,54 +58,93 @@ $safeLogin = isset($rawLogin) ? safe($rawLogin) : '';
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login – IT Ausleihesystem</title>
+    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="centered-wrapper">
-<div class="card">
-    <h1>Login</h1>
 
-    <?php if (!empty($errors)): ?>
-        <div class="errors">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
-                    <li><?= safe($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
+<nav class="navbar navbar-expand-lg navbar-light" role="navigation" style="min-height: 60px">
+    <a href="login.php" class="navbar-brand">
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz"/>
+        <span class="navbar-title">IT Ausleihesystem</span>
+    </a>
+    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
+</nav>
+
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-4">Login</h1>
+
+                    <?php if (!empty($errors)): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0 pl-3">
+                                <?php foreach ($errors as $error): ?>
+                                    <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
+                                    <li><?= safe($error) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="post" action="login.php">
+
+                        <div class="form-group">
+                            <label for="login">Benutzername oder E-Mail</label>
+                            <!-- C5: required + maxlength – clientseitige Validierung -->
+                            <input
+                                type="text"
+                                id="login"
+                                name="login"
+                                class="form-control"
+                                required
+                                maxlength="100"
+                                value="<?= $safeLogin ?>"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Passwort</label>
+                            <!-- C5: required + minlength – clientseitige Validierung -->
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                required
+                                minlength="8"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Anmelden</button>
+                    </form>
+
+                    <p class="text-center mt-3 mb-0">
+                        <a href="register.php">Noch kein Konto? Hier registrieren</a>
+                    </p>
+                </div>
+            </div>
         </div>
-    <?php endif; ?>
+    </div>
+</main>
 
-    <form method="post" action="login.php">
-
-        <label for="login">Benutzername oder E-Mail</label>
-        <!-- C5: required + maxlength – clientseitige Validierung -->
-        <input
-            type="text"
-            id="login"
-            name="login"
-            required
-            maxlength="100"
-            value="<?= $safeLogin ?>"
-        >
-
-        <label for="password">Passwort</label>
-        <!-- C5: required + minlength – clientseitige Validierung -->
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            minlength="8"
-        >
-
-        <button type="submit">Anmelden</button>
-    </form>
-
-    <p class="link"><a href="register.php">Noch kein Konto? Hier registrieren</a></p>
-</div>
-</div>
+<footer id="footer" class="mt-5">
+    <div class="container tools__footer pt-4">
+        <div class="row">
+            <div class="d-flex justify-content-center w-100">
+                <p>
+                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
+                        www.fhnw.ch/de/die-fhnw/it-support
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

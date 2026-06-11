@@ -117,84 +117,129 @@ $safeEmail    = isset($rawEmail)    ? safe($rawEmail)    : '';
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Registrierung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrierung – IT Ausleihesystem</title>
+    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="centered-wrapper">
-<div class="card">
-    <h1>Registrierung</h1>
 
-    <?php if (!empty($errors)): ?>
-        <div class="errors">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
-                    <li><?= safe($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
+<nav class="navbar navbar-expand-lg navbar-light" role="navigation" style="min-height: 60px">
+    <a href="login.php" class="navbar-brand">
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz"/>
+        <span class="navbar-title">IT Ausleihesystem</span>
+    </a>
+    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
+</nav>
+
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-4">Registrierung</h1>
+
+                    <?php if (!empty($errors)): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0 pl-3">
+                                <?php foreach ($errors as $error): ?>
+                                    <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
+                                    <li><?= safe($error) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- C13: Registrierungsformular – erfasst Benutzername, E-Mail und Passwort -->
+                    <form method="post" action="register.php">
+
+                        <div class="form-group">
+                            <label for="username">Benutzername</label>
+                            <!-- C5: required + maxlength – clientseitige Validierung -->
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="form-control"
+                                required
+                                maxlength="50"
+                                value="<?= $safeUsername ?>"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">E-Mail-Adresse</label>
+                            <!--
+                                C5: type="email" + required + maxlength – clientseitige Validierung
+                                C7: value wird durch safe() geschützt ausgegeben
+                            -->
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                required
+                                maxlength="100"
+                                value="<?= $safeEmail ?>"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Passwort</label>
+                            <!--
+                                C5: minlength + pattern erzwingen Komplexität bereits im Browser
+                                C7: Passwort wird NICHT als value zurückgegeben
+                            -->
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                required
+                                minlength="8"
+                                pattern="^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$"
+                                title="Mindestens 8 Zeichen, Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirm">Passwort bestätigen</label>
+                            <!-- C5: required + minlength – clientseitige Validierung -->
+                            <input
+                                type="password"
+                                id="password_confirm"
+                                name="password_confirm"
+                                class="form-control"
+                                required
+                                minlength="8"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Registrieren</button>
+                    </form>
+
+                    <p class="text-center mt-3 mb-0">
+                        <a href="login.php">Bereits registriert? Zum Login</a>
+                    </p>
+                </div>
+            </div>
         </div>
-    <?php endif; ?>
+    </div>
+</main>
 
-    <!-- C13: Registrierungsformular – erfasst Benutzername, E-Mail und Passwort -->
-    <form method="post" action="register.php">
-
-        <label for="username">Benutzername</label>
-        <!-- C5: required + maxlength – clientseitige Validierung -->
-        <input
-            type="text"
-            id="username"
-            name="username"
-            required
-            maxlength="50"
-            value="<?= $safeUsername ?>"
-        >
-
-        <label for="email">E-Mail-Adresse</label>
-        <!--
-            C5: type="email" + required + maxlength – clientseitige Validierung
-            C7: value wird durch safe() geschützt ausgegeben
-        -->
-        <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            maxlength="100"
-            value="<?= $safeEmail ?>"
-        >
-
-        <label for="password">Passwort</label>
-        <!--
-            C5: minlength + pattern erzwingen Komplexität bereits im Browser
-            C7: Passwort wird NICHT als value zurückgegeben
-        -->
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            minlength="8"
-            pattern="^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$"
-            title="Mindestens 8 Zeichen, Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen"
-        >
-
-        <label for="password_confirm">Passwort bestätigen</label>
-        <!-- C5: required + minlength – clientseitige Validierung -->
-        <input
-            type="password"
-            id="password_confirm"
-            name="password_confirm"
-            required
-            minlength="8"
-        >
-
-        <button type="submit">Registrieren</button>
-    </form>
-
-    <p class="link"><a href="login.php">Bereits registriert? Zum Login</a></p>
-</div>
-</div>
+<footer id="footer" class="mt-5">
+    <div class="container tools__footer pt-4">
+        <div class="row">
+            <div class="d-flex justify-content-center w-100">
+                <p>
+                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
+                        www.fhnw.ch/de/die-fhnw/it-support
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

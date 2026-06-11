@@ -131,89 +131,109 @@ mysqli_free_result($result);
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Geräte verwalten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Geräte verwalten – IT Ausleihesystem</title>
+    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="card-wide">
 
-    <!-- C8: Nav nur erreichbar wenn angemeldet (requireAdmin) -->
-    <div class="nav-bar">
-        <a href="index.php">Dashboard</a>
-        <a href="borrow.php">Ausleihen</a>
-        <a href="my_loans.php">Meine Ausleihen</a>
-        <a href="devices.php" class="active">Geräte verwalten</a>
-        <a href="change_password.php">Passwort</a>
-        <form method="post" action="logout.php">
-            <button class="btn-nav">Abmelden</button>
-        </form>
-    </div>
+<!-- C8: Nav nur erreichbar wenn angemeldet (requireAdmin) -->
+<nav class="navbar navbar-expand-lg navbar-light" role="navigation" style="min-height: 60px">
+    <a href="index.php" class="navbar-brand">
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz"/>
+        <span class="navbar-title">IT Ausleihesystem</span>
+    </a>
+    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
+    <ul class="navbar-nav ml-auto align-items-center flex-row">
+        <li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="borrow.php">Ausleihen</a></li>
+        <li class="nav-item"><a class="nav-link" href="my_loans.php">Meine Ausleihen</a></li>
+        <li class="nav-item"><a class="nav-link active font-weight-bold" href="devices.php">Geräte</a></li>
+        <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <?= safe($_SESSION['username']) ?>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="index.php">Mein Profil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="change_password.php">Passwort ändern</a>
+                <div class="dropdown-divider"></div>
+                <form method="post" action="logout.php">
+                    <button type="submit" class="dropdown-item text-danger">Abmelden</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
 
-    <h1>Geräte verwalten</h1>
+<main class="container mt-4">
+
+    <h1 class="h3 mb-4">Geräte verwalten</h1>
 
     <?php foreach ($messages as $m): ?>
         <!-- C7: safe() schützt vor XSS in Erfolgsmeldungen -->
-        <div class="success"><?= safe($m) ?></div>
+        <div class="alert alert-success"><?= safe($m) ?></div>
     <?php endforeach; ?>
     <?php foreach ($errors as $e): ?>
         <!-- C7: safe() schützt vor XSS in Fehlermeldungen -->
-        <div class="errors"><?= safe($e) ?></div>
+        <div class="alert alert-danger"><?= safe($e) ?></div>
     <?php endforeach; ?>
 
     <!-- C16: Gerät manuell erfassen -->
     <div class="section">
-        <h2>Gerät manuell hinzufügen</h2>
+        <h2 class="h5 mb-3">Gerät manuell hinzufügen</h2>
         <form method="post" action="devices.php">
             <input type="hidden" name="action" value="add">
             <div class="form-grid">
                 <div>
                     <!-- C5: required + maxlength – clientseitige Validierung -->
                     <label>Name *</label>
-                    <input type="text" name="name" required maxlength="100">
+                    <input type="text" name="name" class="form-control" required maxlength="100">
                 </div>
                 <div>
                     <!-- C5: maxlength – clientseitige Validierung -->
                     <label>Kategorie</label>
-                    <input type="text" name="category" maxlength="50">
+                    <input type="text" name="category" class="form-control" maxlength="50">
                 </div>
                 <div>
                     <!-- C5: maxlength – clientseitige Validierung -->
                     <label>Seriennummer</label>
-                    <input type="text" name="serial_number" maxlength="100">
+                    <input type="text" name="serial_number" class="form-control" maxlength="100">
                 </div>
                 <div>
                     <label>Beschreibung</label>
-                    <input type="text" name="description">
+                    <input type="text" name="description" class="form-control">
                 </div>
             </div>
-            <button type="submit" class="btn-auto">Gerät hinzufügen</button>
+            <button type="submit" class="btn btn-primary">Gerät hinzufügen</button>
         </form>
     </div>
 
     <!-- C16: Geräte via CSV erfassen -->
     <div class="section">
-        <h2>Import via CSV</h2>
+        <h2 class="h5 mb-3">Import via CSV</h2>
         <p class="info-text">
             Format (Semikolon-getrennt, erste Zeile = Kopfzeile):<br>
             <code>name;description;category;serial_number</code><br>
             Vorlage: <a href="geraete_vorlage.csv" download>geraete_vorlage.csv</a>
         </p>
         <!-- C5: accept=".csv" – clientseitige Dateiprüfung -->
-        <form method="post" action="devices.php" enctype="multipart/form-data">
+        <form method="post" action="devices.php" enctype="multipart/form-data" class="d-flex align-items-center" style="gap:12px">
             <input type="hidden" name="action" value="import_csv">
-            <input type="file" name="csv_file" accept=".csv" style="width:auto; margin-bottom:12px;">
-            <button type="submit" class="btn-auto">Importieren</button>
+            <input type="file" name="csv_file" accept=".csv" class="form-control-file">
+            <button type="submit" class="btn btn-secondary">Importieren</button>
         </form>
     </div>
 
     <!-- Geräteliste -->
     <div class="section">
-        <h2>Alle Geräte (<?= count($devices) ?>)</h2>
+        <h2 class="h5 mb-3">Alle Geräte (<?= count($devices) ?>)</h2>
         <?php if (empty($devices)): ?>
             <p>Noch keine Geräte erfasst.</p>
         <?php else: ?>
-        <table>
-            <thead>
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
                 <tr>
                     <th>Name</th>
                     <th>Kategorie</th>
@@ -247,10 +267,10 @@ mysqli_free_result($result);
                               onsubmit="return confirm('Gerät «<?= safe($d['name']) ?>» wirklich löschen?')">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="device_id" value="<?= (int)$d['id'] ?>">
-                            <button type="submit" class="btn-sm btn-danger">Löschen</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Löschen</button>
                         </form>
                         <?php else: ?>
-                            <span style="color:#aaa; font-size:0.8rem;">Nicht dein Gerät</span>
+                            <span class="text-muted small">Nicht dein Gerät</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -260,6 +280,23 @@ mysqli_free_result($result);
         <?php endif; ?>
     </div>
 
-</div>
+</main>
+
+<footer id="footer" class="mt-5">
+    <div class="container tools__footer pt-4">
+        <div class="row">
+            <div class="d-flex justify-content-center w-100">
+                <p>
+                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
+                        www.fhnw.ch/de/die-fhnw/it-support
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
