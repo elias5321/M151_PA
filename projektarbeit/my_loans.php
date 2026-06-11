@@ -1,4 +1,5 @@
 <?php
+// C8: Session starten und Login prüfen
 session_start();
 require_once 'auth.php';
 require_once 'db.php';
@@ -6,6 +7,7 @@ requireLogin();
 
 /** @var \mysqli $conn */
 
+// C7: Ausgaben werden mit safe() vor XSS geschützt
 function safe(string $v): string {
     return htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
@@ -18,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_SESSION['user_id'];
 
     if ($loanId > 0) {
+        // C17/C18: Prüfen ob die Ausleihe dem angemeldeten Benutzer gehört
+        // C19: Prepared Statement verhindert SQL-Injection
         $stmt = mysqli_prepare($conn,
             'SELECT device_id FROM loans WHERE id = ? AND user_id = ? AND returned_at IS NULL');
         mysqli_stmt_bind_param($stmt, 'ii', $loanId, $userId);
@@ -27,11 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_close($stmt);
 
         if ($deviceId) {
+            // C18: Nur der Ausleiher kann zurückgeben (user_id-Prüfung oben)
+            // C19: Prepared Statement
             $stmt = mysqli_prepare($conn, 'UPDATE loans SET returned_at = NOW() WHERE id = ?');
             mysqli_stmt_bind_param($stmt, 'i', $loanId);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
 
+            // C19: Prepared Statement – Gerät wieder verfügbar setzen
             $stmt = mysqli_prepare($conn, 'UPDATE devices SET is_available = 1 WHERE id = ?');
             mysqli_stmt_bind_param($stmt, 'i', $deviceId);
             mysqli_stmt_execute($stmt);
@@ -45,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $userId = $_SESSION['user_id'];
+// C19: Prepared Statement – nur eigene Ausleihen laden (C17)
 $stmt   = mysqli_prepare($conn,
     'SELECT l.id, d.name, d.category, d.serial_number, l.borrowed_at, l.due_date
      FROM loans l
@@ -63,39 +71,63 @@ $today = date('Y-m-d');
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Meine Ausleihen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meine Ausleihen – IT Ausleihesystem</title>
+    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="card-wide">
 
-    <div class="nav-bar">
-        <a href="index.php">Dashboard</a>
-        <a href="borrow.php">Ausleihen</a>
-        <a href="my_loans.php" class="active">Meine Ausleihen</a>
+<!-- C8: Nav nur erreichbar wenn angemeldet (requireLogin) -->
+<nav class="navbar navbar-expand-lg navbar-light" style="min-height: 60px">
+    <a href="index.php" class="navbar-brand">
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz">
+        <span class="navbar-title">IT Ausleihesystem</span>
+    </a>
+    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
+    <ul class="navbar-nav ml-auto align-items-center flex-row">
+        <li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="borrow.php">Ausleihen</a></li>
+        <li class="nav-item"><a class="nav-link active font-weight-bold" href="my_loans.php">Meine Ausleihen</a></li>
         <?php if ($_SESSION['role'] === 'admin'): ?>
-            <a href="devices.php">Geräte verwalten</a>
+            <li class="nav-item"><a class="nav-link" href="devices.php">Geräte</a></li>
         <?php endif; ?>
-        <a href="change_password.php">Passwort</a>
-        <form method="post" action="logout.php">
-            <button class="btn-nav">Abmelden</button>
-        </form>
-    </div>
+        <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <?= safe($_SESSION['username']) ?>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="index.php">Mein Profil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="change_password.php">Passwort ändern</a>
+                <div class="dropdown-divider"></div>
+                <form method="post" action="logout.php">
+                    <button type="submit" class="dropdown-item text-danger">Abmelden</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
 
-    <h1>Meine Ausleihen</h1>
+<main class="container mt-4">
+
+    <!-- C17/C18: Benutzer sieht und verwaltet nur seine eigenen Ausleihen -->
+    <h1 class="h3 mb-4">Meine Ausleihen</h1>
 
     <?php foreach ($messages as $m): ?>
-        <div class="success"><?= safe($m) ?></div>
+        <!-- C7: safe() schützt vor XSS -->
+        <div class="alert alert-success"><?= safe($m) ?></div>
     <?php endforeach; ?>
     <?php foreach ($errors as $e): ?>
-        <div class="errors"><?= safe($e) ?></div>
+        <!-- C7: safe() schützt vor XSS -->
+        <div class="alert alert-danger"><?= safe($e) ?></div>
     <?php endforeach; ?>
 
     <?php if (empty($loans)): ?>
         <p>Du hast aktuell keine aktiven Ausleihen.</p>
     <?php else: ?>
-    <table>
-        <thead>
+    <table class="table table-striped table-hover">
+        <thead class="thead-light">
             <tr>
                 <th>Gerät</th>
                 <th>Kategorie</th>
@@ -110,15 +142,17 @@ $today = date('Y-m-d');
                 $overdue = $loan['due_date'] < $today;
             ?>
             <tr class="<?= $overdue ? 'overdue' : '' ?>">
+                <!-- C7: safe() schützt alle DB-Ausgaben vor XSS -->
                 <td><?= safe($loan['name']) ?></td>
                 <td><?= safe($loan['category'] ?? '') ?></td>
                 <td><?= safe($loan['serial_number'] ?? '') ?></td>
                 <td><?= safe($loan['borrowed_at']) ?></td>
                 <td><?= safe($loan['due_date']) ?><?= $overdue ? ' &mdash; <strong>überfällig</strong>' : '' ?></td>
                 <td>
+                    <!-- C18: Zurückgeben nur für eigene Ausleihen (loan_id + user_id geprüft) -->
                     <form method="post" action="my_loans.php">
                         <input type="hidden" name="loan_id" value="<?= (int)$loan['id'] ?>">
-                        <button type="submit" class="btn-sm">Zurückgeben</button>
+                        <button type="submit" class="btn btn-secondary btn-sm">Zurückgeben</button>
                     </form>
                 </td>
             </tr>
@@ -127,6 +161,23 @@ $today = date('Y-m-d');
     </table>
     <?php endif; ?>
 
-</div>
+</main>
+
+<footer id="footer" class="mt-5">
+    <div class="container tools__footer pt-4">
+        <div class="row">
+            <div class="d-flex justify-content-center w-100">
+                <p>
+                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
+                        www.fhnw.ch/de/die-fhnw/it-support
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
