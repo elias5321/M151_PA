@@ -74,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light" role="navigation" style="min-height: 60px">
+<nav class="navbar navbar-expand-lg navbar-light" style="min-height: 60px">
     <a href="index.php" class="navbar-brand">
-        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz"/>
+        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz">
         <span class="navbar-title">IT Ausleihesystem</span>
     </a>
     <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a class="nav-link dropdown-toggle active font-weight-bold" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <?= safe($_SESSION['username']) ?>
             </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+            <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="index.php">Mein Profil</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item active" href="change_password.php">Passwort ändern</a>
