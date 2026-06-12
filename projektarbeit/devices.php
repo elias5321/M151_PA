@@ -20,10 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cat    = trim($_POST['category']      ?? '');
         $serial = trim($_POST['serial_number'] ?? '') ?: null;
 
-        // C6: Serverseitige Validierung – Name darf nicht leer sein
+        // C6: Serverseitige Validierung – spiegelt clientseitige required/maxlength-Attribute
         if (empty($name)) {
             $errors[] = 'Name darf nicht leer sein.';
-        } else {
+        } elseif (strlen($name) > 100) {
+            $errors[] = 'Name darf maximal 100 Zeichen lang sein.';
+        }
+        if (!empty($cat) && strlen($cat) > 50) {
+            $errors[] = 'Kategorie darf maximal 50 Zeichen lang sein.';
+        }
+        if ($serial !== null && strlen($serial) > 100) {
+            $errors[] = 'Seriennummer darf maximal 100 Zeichen lang sein.';
+        }
+
+        if (empty($errors)) {
             // C19: Prepared Statement verhindert SQL-Injection
             $stmt = mysqli_prepare($conn,
                 'INSERT INTO devices (name, description, category, serial_number, created_by) VALUES (?, ?, ?, ?, ?)');
@@ -67,9 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── C16: CSV-Import ───────────────────────────────
     if ($action === 'import_csv') {
-        // C6: Datei-Upload serverseitig prüfen
+        // C6: Datei-Upload serverseitig prüfen – spiegelt clientseitiges accept=".csv"
         if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
             $errors[] = 'Bitte eine CSV-Datei auswählen.';
+        } elseif (strtolower(pathinfo($_FILES['csv_file']['name'], PATHINFO_EXTENSION)) !== 'csv') {
+            $errors[] = 'Nur CSV-Dateien (.csv) sind erlaubt.';
         } else {
             $handle = fopen($_FILES['csv_file']['tmp_name'], 'r');
             if (!$handle) {

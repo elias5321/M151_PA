@@ -19,8 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Ungültiges Gerät.';
     } elseif (empty($dueDate)) {
         $errors[] = 'Bitte ein Rückgabedatum angeben.';
+    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dueDate)) {
+        // C6: Format YYYY-MM-DD prüfen – spiegelt type="date"
+        $errors[] = 'Ungültiges Datumsformat.';
     } elseif ($dueDate <= date('Y-m-d')) {
-        // C6: Datum muss in der Zukunft liegen
+        // C6: Datum muss in der Zukunft liegen – spiegelt min-Attribut
         $errors[] = 'Rückgabedatum muss in der Zukunft liegen.';
     } else {
         // C19: Prepared Statement – prüft ob Gerät noch verfügbar ist

@@ -15,17 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newPw     = trim($_POST['new_password'] ?? '');
     $confirmPw = trim($_POST['confirm_password'] ?? '');
 
-    // C6: Alle Felder ausgefüllt?
-    if (empty($currentPw) || empty($newPw) || empty($confirmPw)) {
-        $errors[] = 'Alle Felder müssen ausgefüllt sein.';
-    } elseif ($newPw !== $confirmPw) {
-        // C6: Passwörter stimmen überein?
+    // C6: Pflichtfelder + Längengrenzen – spiegeln required/minlength
+    if (empty($currentPw))       { $errors[] = 'Aktuelles Passwort darf nicht leer sein.'; }
+    if (empty($newPw))           { $errors[] = 'Neues Passwort darf nicht leer sein.'; }
+    if (strlen($newPw) < 8)      { $errors[] = 'Neues Passwort muss mindestens 8 Zeichen lang sein.'; }
+    if (empty($confirmPw))       { $errors[] = 'Passwort-Bestätigung darf nicht leer sein.'; }
+    if (strlen($confirmPw) < 8)  { $errors[] = 'Passwort-Bestätigung muss mindestens 8 Zeichen lang sein.'; }
+    if (!empty($newPw) && !empty($confirmPw) && $newPw !== $confirmPw) {
         $errors[] = 'Neues Passwort und Bestätigung stimmen nicht überein.';
-    } elseif (strlen($newPw) < 8) {
-        // C6: Mindestlänge prüfen
-        $errors[] = 'Neues Passwort muss mindestens 8 Zeichen lang sein.';
-    } else {
-        // C6: Passwort-Komplexität prüfen
+    }
+    // C6: Passwort-Komplexität prüfen – spiegelt pattern-Attribut
+    if (empty($errors)) {
         $pattern = '/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[\W_]).{8,})\S$/';
         if (!preg_match($pattern, $newPw)) {
             $errors[] = 'Passwort muss Gross-/Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.';

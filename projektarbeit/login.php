@@ -18,9 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $rawLogin    = trim($_POST['login']);
         $rawPassword = trim($_POST['password']);
 
-        // C6: Felder nicht leer?
-        if (empty($rawLogin))    { $errors[] = 'Benutzername oder E-Mail darf nicht leer sein.'; }
-        if (empty($rawPassword)) { $errors[] = 'Passwort darf nicht leer sein.'; }
+        // C6: Pflichtfelder + Längengrenzen – spiegeln required/maxlength/minlength
+        if (empty($rawLogin))          { $errors[] = 'Benutzername oder E-Mail darf nicht leer sein.'; }
+        if (strlen($rawLogin) > 100)   { $errors[] = 'Benutzername oder E-Mail darf maximal 100 Zeichen lang sein.'; }
+        if (empty($rawPassword))       { $errors[] = 'Passwort darf nicht leer sein.'; }
+        if (strlen($rawPassword) < 8)  { $errors[] = 'Passwort muss mindestens 8 Zeichen lang sein.'; }
 
         if (empty($errors)) {
             // C19: Prepared Statement verhindert SQL-Injection
