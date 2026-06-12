@@ -7,11 +7,6 @@ requireAdmin();
 
 /** @var \mysqli $conn */
 
-// C7: Ausgaben werden mit safe() vor XSS geschützt
-function safe(string $v): string {
-    return htmlspecialchars($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
 $messages = [];
 $errors   = [];
 
@@ -126,46 +121,12 @@ $result  = mysqli_query($conn,
      ORDER BY d.created_at DESC');
 $devices = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_free_result($result);
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Geräte verwalten – IT Ausleihesystem</title>
-    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-<!-- C8: Nav nur erreichbar wenn angemeldet (requireAdmin) -->
-<nav class="navbar navbar-expand-lg navbar-light" style="min-height: 60px">
-    <a href="index.php" class="navbar-brand">
-        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz">
-        <span class="navbar-title">IT Ausleihesystem</span>
-    </a>
-    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
-    <ul class="navbar-nav ml-auto align-items-center flex-row">
-        <li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="borrow.php">Ausleihen</a></li>
-        <li class="nav-item"><a class="nav-link" href="my_loans.php">Meine Ausleihen</a></li>
-        <li class="nav-item"><a class="nav-link active font-weight-bold" href="devices.php">Geräte</a></li>
-        <li class="nav-item dropdown ml-auto">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <?= safe($_SESSION['username']) ?>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="index.php">Mein Profil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="change_password.php">Passwort ändern</a>
-                <div class="dropdown-divider"></div>
-                <form method="post" action="logout.php">
-                    <button type="submit" class="dropdown-item text-danger">Abmelden</button>
-                </form>
-            </div>
-        </li>
-    </ul>
-</nav>
+$pageTitle = 'Geräte verwalten';
+$activeNav = 'devices';
+?>
+<?php include 'partials/head.php'; ?>
+<?php include 'partials/nav.php'; ?>
 
 <main class="container mt-4">
 
@@ -282,21 +243,7 @@ mysqli_free_result($result);
 
 </main>
 
-<footer id="footer" class="mt-5">
-    <div class="container tools__footer pt-4">
-        <div class="row">
-            <div class="d-flex justify-content-center w-100">
-                <p>
-                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
-                        www.fhnw.ch/de/die-fhnw/it-support
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<?php include 'partials/footer.php'; ?>
+<?php include 'partials/scripts.php'; ?>
 </body>
 </html>

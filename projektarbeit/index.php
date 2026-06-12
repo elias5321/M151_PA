@@ -3,50 +3,11 @@ session_start();
 require_once 'auth.php';
 requireLogin();
 
-function safe(string $value): string {
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
+$pageTitle = 'Dashboard';
+$activeNav = 'dashboard';
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard – IT Ausleihesystem</title>
-    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-light" style="min-height: 60px">
-    <a href="index.php" class="navbar-brand">
-        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz">
-        <span class="navbar-title">IT Ausleihesystem</span>
-    </a>
-    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
-    <ul class="navbar-nav ml-auto align-items-center flex-row">
-        <li class="nav-item"><a class="nav-link active font-weight-bold" href="index.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="borrow.php">Ausleihen</a></li>
-        <li class="nav-item"><a class="nav-link" href="my_loans.php">Meine Ausleihen</a></li>
-        <?php if ($_SESSION['role'] === 'admin'): ?>
-            <li class="nav-item"><a class="nav-link" href="devices.php">Geräte</a></li>
-        <?php endif; ?>
-        <li class="nav-item dropdown ml-auto">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <?= safe($_SESSION['username']) ?>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="index.php">Mein Profil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="change_password.php">Passwort ändern</a>
-                <div class="dropdown-divider"></div>
-                <form method="post" action="logout.php">
-                    <button type="submit" class="dropdown-item text-danger">Abmelden</button>
-                </form>
-            </div>
-        </li>
-    </ul>
-</nav>
+<?php include 'partials/head.php'; ?>
+<?php include 'partials/nav.php'; ?>
 
 <main class="container mt-5">
     <div class="row justify-content-center">
@@ -72,23 +33,47 @@ function safe(string $value): string {
             </div>
         </div>
     </div>
-</main>
 
-<footer id="footer" class="mt-5">
-    <div class="container tools__footer pt-4">
-        <div class="row">
-            <div class="d-flex justify-content-center w-100">
-                <p>
-                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
-                        www.fhnw.ch/de/die-fhnw/it-support
-                    </a>
-                </p>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-1">Static Site Generators (SSGs)</h2>
+                    <p class="text-muted mb-4">Bei einer statischen Website macht automatisch generierter Code nicht nur Sinn – er ist heutzutage der absolute Standard für professionelle Entwickler.</p>
+
+                    <div class="card bg-light border-0 mb-3">
+                        <div class="card-body">
+                            <h3 class="h6 font-weight-bold mb-2">Das Problem ohne Generator (Die Handarbeit)</h3>
+                            <p class="mb-0">
+                                Stell dir vor, du baust eine Website mit 5 Unterseiten (Home, Über uns, Leistungen, Blog, Kontakt).
+                                Jede Seite hat denselben Header (Menü) und denselben Footer.
+                                Wenn du einen Link im Menü änderst, musst du alle 5 HTML-Dateien händisch öffnen und den Link überall einzeln ändern.
+                                Das ist extrem fehleranfällig.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card border-primary mb-0">
+                        <div class="card-body">
+                            <h3 class="h6 font-weight-bold text-primary mb-2">Die Lösung mit Generator (Auto-Generated)</h3>
+                            <p>
+                                Du schreibst den Header nur <strong>ein einziges Mal</strong> als Baustein (Component).
+                                Den eigentlichen Inhalt der Seiten schreibst du oft in ganz einfachem Text (Markdown).
+                            </p>
+                            <p class="mb-0">
+                                Wenn du fertig bist, drückst du auf <em>„Build" (Generieren)</em>.
+                                Das Tool nimmt deine Bausteine, fügt sie zusammen und spuckt automatisch generierte HTML- und CSS-Dateien aus –
+                                du bekommst die Vorteile eines dynamischen Systems beim Schreiben, aber der Besucher bekommt eine blitzschnelle, reine HTML-Seite.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</footer>
+</main>
 
-<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<?php include 'partials/footer.php'; ?>
+<?php include 'partials/scripts.php'; ?>
 </body>
 </html>
