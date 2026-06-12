@@ -34,43 +34,6 @@ $activeNav = 'dashboard';
         </div>
     </div>
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-10 col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="h5 mb-1">Static Site Generators (SSGs)</h2>
-                    <p class="text-muted mb-4">Bei einer statischen Website macht automatisch generierter Code nicht nur Sinn – er ist heutzutage der absolute Standard für professionelle Entwickler.</p>
-
-                    <div class="card bg-light border-0 mb-3">
-                        <div class="card-body">
-                            <h3 class="h6 font-weight-bold mb-2">Das Problem ohne Generator (Die Handarbeit)</h3>
-                            <p class="mb-0">
-                                Stell dir vor, du baust eine Website mit 5 Unterseiten (Home, Über uns, Leistungen, Blog, Kontakt).
-                                Jede Seite hat denselben Header (Menü) und denselben Footer.
-                                Wenn du einen Link im Menü änderst, musst du alle 5 HTML-Dateien händisch öffnen und den Link überall einzeln ändern.
-                                Das ist extrem fehleranfällig.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="card border-primary mb-0">
-                        <div class="card-body">
-                            <h3 class="h6 font-weight-bold text-primary mb-2">Die Lösung mit Generator (Auto-Generated)</h3>
-                            <p>
-                                Du schreibst den Header nur <strong>ein einziges Mal</strong> als Baustein (Component).
-                                Den eigentlichen Inhalt der Seiten schreibst du oft in ganz einfachem Text (Markdown).
-                            </p>
-                            <p class="mb-0">
-                                Wenn du fertig bist, drückst du auf <em>„Build" (Generieren)</em>.
-                                Das Tool nimmt deine Bausteine, fügt sie zusammen und spuckt automatisch generierte HTML- und CSS-Dateien aus –
-                                du bekommst die Vorteile eines dynamischen Systems beim Schreiben, aber der Besucher bekommt eine blitzschnelle, reine HTML-Seite.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
 
 <?php include 'partials/footer.php'; ?>
