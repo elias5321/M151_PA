@@ -2,6 +2,7 @@
 // C8: Session starten – wird für Session Handling benötigt
 session_start();
 
+require_once 'auth.php';
 require_once 'db.php';
 /** @var \mysqli $conn */
 
@@ -17,9 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $rawLogin    = trim($_POST['login']);
         $rawPassword = trim($_POST['password']);
 
-        // C6: Felder nicht leer?
-        if (empty($rawLogin))    { $errors[] = 'Benutzername oder E-Mail darf nicht leer sein.'; }
-        if (empty($rawPassword)) { $errors[] = 'Passwort darf nicht leer sein.'; }
+        // C6: Pflichtfelder + Längengrenzen – spiegeln required/maxlength/minlength
+        if (empty($rawLogin))          { $errors[] = 'Benutzername oder E-Mail darf nicht leer sein.'; }
+        if (strlen($rawLogin) > 100)   { $errors[] = 'Benutzername oder E-Mail darf maximal 100 Zeichen lang sein.'; }
+        if (empty($rawPassword))       { $errors[] = 'Passwort darf nicht leer sein.'; }
+        if (strlen($rawPassword) < 8)  { $errors[] = 'Passwort muss mindestens 8 Zeichen lang sein.'; }
 
         if (empty($errors)) {
             // C19: Prepared Statement verhindert SQL-Injection
@@ -47,31 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// C7: htmlspecialchars() verhindert XSS bei der Ausgabe
-function safe(string $value): string {
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
 $safeLogin = isset($rawLogin) ? safe($rawLogin) : '';
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login – IT Ausleihesystem</title>
-    <link rel="stylesheet" href="https://web.fhnw.ch/fhnw-styleguide-v5/assets/css/fhnw.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-<nav class="navbar navbar-expand-lg navbar-light" style="min-height: 60px">
-    <a href="login.php" class="navbar-brand">
-        <img src="https://web.fhnw.ch/fhnw-styleguide-v5/assets/img/fachhochschule-nordwestschweiz-fhnw-logo.svg" alt="FHNW - Fachhochschule Nordwestschweiz">
-        <span class="navbar-title">IT Ausleihesystem</span>
-    </a>
-    <span class="navbar-title d-sm-none">IT Ausleihesystem</span>
-</nav>
+$pageTitle = 'Login';
+?>
+<?php include 'partials/head.php'; ?>
+<?php include 'partials/nav_guest.php'; ?>
 
 <main class="container mt-5">
     <div class="row justify-content-center">
@@ -132,19 +116,6 @@ $safeLogin = isset($rawLogin) ? safe($rawLogin) : '';
     </div>
 </main>
 
-<footer id="footer" class="mt-5">
-    <div class="container tools__footer pt-4">
-        <div class="row">
-            <div class="d-flex justify-content-center w-100">
-                <p>
-                    <a href="https://www.fhnw.ch/de/die-fhnw/it-support" target="_blank">
-                        www.fhnw.ch/de/die-fhnw/it-support
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
-
+<?php include 'partials/footer.php'; ?>
 </body>
 </html>

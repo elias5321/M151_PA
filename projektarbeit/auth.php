@@ -1,4 +1,9 @@
 <?php
+// C7: htmlspecialchars() verhindert XSS bei jeder Ausgabe von Benutzerdaten
+function safe(string $value): string {
+    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
 // C8: Zugriffskontrolle – nicht angemeldete Personen werden weitergeleitet
 function requireLogin(): void {
     if (!isset($_SESSION['user_id'])) {
