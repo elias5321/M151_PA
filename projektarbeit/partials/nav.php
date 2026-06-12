@@ -27,9 +27,7 @@
                 <?= safe($_SESSION['username']) ?>
             </a>
             <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="index.php">Mein Profil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item<?= $activeNav === 'profile' ? ' active' : '' ?>" href="change_password.php">Passwort ändern</a>
+                <a class="dropdown-item<?= $activeNav === 'profile' ? ' active' : '' ?>" href="profile.php">Mein Profil</a>
                 <div class="dropdown-divider"></div>
                 <form method="post" action="logout.php">
                     <button type="submit" class="dropdown-item text-danger">Abmelden</button>
